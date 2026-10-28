@@ -1,0 +1,16 @@
+customer_id,gender,age,tenure_months,subscription_type,monthly_charges,total_charges,contract_type,support_tickets,payment_method,churn,churn_flag,expected_total_charges,charge_gap,tenure_band
+CUST-1001,Female,34,12,Basic,49.99,599.88,Month-to-Month,3,Credit Card,Yes,1,599.88,0.0,7-12
+CUST-1002,Male,45,24,Pro,79.99,1919.76,One Year,1,Bank Transfer,No,0,1919.76,0.0,13-24
+CUST-1003,Female,29,6,Basic,49.99,299.94,Month-to-Month,5,UPI,Yes,1,299.94,0.0,0-6
+CUST-1004,Male,52,36,Enterprise,149.99,5399.64,Two Year,0,Credit Card,No,0,5399.64,0.0,25+
+CUST-1005,Female,41,8,Pro,79.99,639.92,Month-to-Month,4,Debit Card,Yes,1,639.92,0.0,7-12
+CUST-1006,Male,31,18,Basic,49.99,899.82,One Year,2,UPI,No,0,899.82,0.0,13-24
+CUST-1007,Female,23,3,Basic,49.99,149.97,Month-to-Month,6,Credit Card,Yes,1,149.97,0.0,0-6
+CUST-1008,Male,60,48,Enterprise,149.99,7199.52,Two Year,1,Bank Transfer,No,0,7199.52,0.0,25+
+CUST-1009,Female,38,15,Pro,79.99,1199.85,One Year,2,Credit Card,No,0,1199.85,0.0,13-24
+CUST-1010,Male,27,4,Basic,49.99,199.96,Month-to-Month,4,UPI,Yes,1,199.96,0.0,0-6
+CUST-1011,Female,49,30,Enterprise,149.99,4499.7,Two Year,0,Credit Card,No,0,4499.7,0.0,25+
+CUST-1012,Male,33,14,Pro,79.99,1119.86,Month-to-Month,3,Debit Card,Yes,1,1119.86,0.0,13-24
+CUST-1013,Female,55,22,Basic,49.99,1099.78,One Year,1,Bank Transfer,No,0,1099.78,0.0,13-24
+CUST-1014,Male,26,2,Basic,49.99,99.98,Month-to-Month,5,UPI,Yes,1,99.98,0.0,0-6
+CUST-1015,Female,43,40,Enterprise,149.99,5999.6,Two Year,1,Credit Card,No,0,5999.6,0.0,25+

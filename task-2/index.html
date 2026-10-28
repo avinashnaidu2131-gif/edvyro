@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Customer Churn KPI Dashboard</title>
+<style>
+:root{color-scheme:light;--bg:#f6f4ef;--card:#fff;--ink:#1d2430;--mute:#5b6472;--line:#e3dfd6;--ret:#0072B2;--chn:#D55E00;--track:#ece8df;--chip:#fff;--on:#1d2430;--onink:#fff;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#14181f;--card:#1d232d;--ink:#eceff4;--mute:#a3adbb;--line:#323a47;--ret:#56B4E9;--chn:#F0803C;--track:#2b3340;--chip:#1d232d;--on:#eceff4;--onink:#14181f}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#14181f;--card:#1d232d;--ink:#eceff4;--mute:#a3adbb;--line:#323a47;--ret:#56B4E9;--chn:#F0803C;--track:#2b3340;--chip:#1d232d;--on:#eceff4;--onink:#14181f}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:1080px;margin:0 auto;padding:22px 16px 48px}
+h1{font:700 clamp(1.6rem,4.5vw,2.3rem)/1.1 "Iowan Old Style",Georgia,serif;margin:0 0 6px}
+h2{font:600 1.05rem/1.3 "Iowan Old Style",Georgia,serif;margin:0 0 2px}
+.sub{color:var(--mute);margin:0 0 18px;max-width:70ch}
+.filters{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;display:grid;gap:12px;margin-bottom:16px}
+.fg{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.fg b{min-width:110px;font-size:.85rem;color:var(--mute);text-transform:uppercase;letter-spacing:.05em}
+button{font:inherit;cursor:pointer}
+.chip{border:1.5px solid var(--line);background:var(--chip);color:var(--ink);border-radius:999px;padding:6px 13px;min-height:36px}
+.chip[aria-pressed="true"]{background:var(--on);color:var(--onink);border-color:var(--on)}
+.chip[aria-pressed="true"]::before{content:"✓ "}
+.chip:focus-visible,.reset:focus-visible{outline:3px solid var(--ret);outline-offset:2px}
+.reset{border:0;background:none;color:var(--ret);text-decoration:underline;padding:6px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-bottom:16px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px}
+.kpi span{display:block;color:var(--mute);font-size:.8rem;text-transform:uppercase;letter-spacing:.05em}
+.kpi strong{display:block;font:700 1.9rem/1.2 "Iowan Old Style",Georgia,serif}
+.kpi small{color:var(--mute)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,470px),1fr));gap:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+.row{display:grid;grid-template-columns:104px 1fr;gap:10px;align-items:center;margin:9px 0}
+.row .l{font-size:.88rem}
+.track{background:var(--track);border-radius:6px;height:22px;display:flex;overflow:hidden}
+.track i{display:block;height:100%}
+.r{background:var(--ret)}.c{background:var(--chn);background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.35) 0 3px,transparent 3px 7px)}
+.val{font-size:.8rem;color:var(--mute);margin-top:2px}
+.ins{margin:12px 0 0;padding:10px 12px;border-left:4px solid var(--chn);background:var(--bg);border-radius:0 8px 8px 0;font-size:.92rem}
+.legend{display:flex;gap:14px;font-size:.82rem;color:var(--mute);margin:6px 0 4px}
+.legend i{display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;margin-right:5px}
+.empty{display:none;padding:18px;text-align:center;color:var(--mute);background:var(--card);border:1px dashed var(--line);border-radius:14px;margin-bottom:16px}
+details{margin-top:16px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 16px}
+summary{cursor:pointer;font-weight:600}
+dl{margin:10px 0 0}dt{font-weight:600;margin-top:8px}dd{margin:0;color:var(--mute)}
+.note{color:var(--mute);font-size:.85rem;margin-top:14px}
+</style></head><body><main>
+<h1>Customer Churn KPI Dashboard</h1>
+<p class="sub">15 synthetic subscription customers. Use the filters to see how churn, retention and revenue at risk change by segment.</p>
+<section class="filters" aria-label="Filters">
+ <div class="fg" id="f-c"><b>Contract</b></div>
+ <div class="fg" id="f-b"><b>Tenure (months)</b></div>
+ <div class="fg" id="f-p"><b>Payment method</b></div>
+ <div class="fg"><button class="reset" id="reset">Reset all filters</button><span id="count" class="val" aria-live="polite"></span></div>
+</section>
+<div class="empty" id="empty">No customers match these filters. Re-select at least one option in each group.</div>
+<section class="kpis" aria-live="polite" id="kpis"></section>
+<section class="grid">
+ <article class="card"><h2>Churn rate by contract</h2><div class="row-wrap" id="ch-c"></div><p class="ins" id="in-c"></p></article>
+ <article class="card"><h2>Churn rate by payment method</h2><div id="ch-p"></div><p class="ins" id="in-p"></p></article>
+ <article class="card"><h2>Customers by tenure band</h2><div class="legend"><span><i class="r"></i>Retained</span><span><i class="c"></i>Churned</span></div><div id="ch-b"></div><p class="ins" id="in-b"></p></article>
+ <article class="card"><h2>Support tickets (last 90 days)</h2><div class="legend"><span><i class="r"></i>Retained</span><span><i class="c"></i>Churned</span></div><div id="ch-t"></div><p class="ins" id="in-t"></p></article>
+ <article class="card"><h2>Monthly revenue at risk by plan</h2><div id="ch-r"></div><p class="ins" id="in-r"></p></article>
+</section>
+<details><summary>KPI definitions</summary><dl>
+<dt>Churn rate</dt><dd>Churned customers ÷ customers in the current filter.</dd>
+<dt>Retention rate</dt><dd>1 − churn rate (retained customers ÷ customers).</dd>
+<dt>Monthly revenue at risk</dt><dd>Sum of monthly charges of churned customers, i.e. recurring revenue lost. It is also shown as a share of all monthly charges in the filter. On live data, the same profile (Month-to-Month, 3+ tickets, under 15 months) would be applied to active customers.</dd>
+<dt>Tenure KPIs</dt><dd>Average tenure in months, shown for all customers, churned and retained.</dd></dl></details>
+<p class="note">Caution: with only 15 customers, one person moves a rate by about 7 points. Patterns are descriptive, not causal, and contract, tenure and tickets overlap heavily. Currency assumed INR. Source: <code>data/customer_churn_clean.csv</code> (validated in Task 1).</p>
+</main>
+<script>
+// [contract, tenure, plan, monthly_charge, tickets, payment, churned]
+const D=[["Month-to-Month",12,"Basic",49.99,3,"Credit Card",1],["One Year",24,"Pro",79.99,1,"Bank Transfer",0],["Month-to-Month",6,"Basic",49.99,5,"UPI",1],["Two Year",36,"Enterprise",149.99,0,"Credit Card",0],["Month-to-Month",8,"Pro",79.99,4,"Debit Card",1],["One Year",18,"Basic",49.99,2,"UPI",0],["Month-to-Month",3,"Basic",49.99,6,"Credit Card",1],["Two Year",48,"Enterprise",149.99,1,"Bank Transfer",0],["One Year",15,"Pro",79.99,2,"Credit Card",0],["Month-to-Month",4,"Basic",49.99,4,"UPI",1],["Two Year",30,"Enterprise",149.99,0,"Credit Card",0],["Month-to-Month",14,"Pro",79.99,3,"Debit Card",1],["One Year",22,"Basic",49.99,1,"Bank Transfer",0],["Month-to-Month",2,"Basic",49.99,5,"UPI",1],["Two Year",40,"Enterprise",149.99,1,"Credit Card",0]];
+const band=t=>t<=6?"0–6":t<=12?"7–12":t<=24?"13–24":"25+";
+const OPT={c:["Month-to-Month","One Year","Two Year"],b:["0–6","7–12","13–24","25+"],p:["Credit Card","Debit Card","UPI","Bank Transfer"]};
+const SEL={c:new Set(OPT.c),b:new Set(OPT.b),p:new Set(OPT.p)};
+const $=id=>document.getElementById(id), pct=x=>Math.round(x*100)+"%", inr=x=>"INR "+x.toLocaleString("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2});
+const avg=a=>a.length?a.reduce((s,x)=>s+x,0)/a.length:0, sum=a=>a.reduce((s,x)=>s+x,0);
+function chips(k){const box=$("f-"+k);OPT[k].forEach(v=>{const b=document.createElement("button");b.className="chip";b.textContent=v;b.setAttribute("aria-pressed","true");b.onclick=()=>{SEL[k].has(v)?SEL[k].delete(v):SEL[k].add(v);b.setAttribute("aria-pressed",SEL[k].has(v));render()};b.dataset.v=v;box.appendChild(b)})}
+["c","b","p"].forEach(chips);
+$("reset").onclick=()=>{["c","b","p"].forEach(k=>{OPT[k].forEach(v=>SEL[k].add(v));$("f-"+k).querySelectorAll(".chip").forEach(b=>b.setAttribute("aria-pressed","true"))});render()};
+const grp=(rows,fn,labels)=>labels.map(l=>{const g=rows.filter(r=>fn(r)===l);return{l,n:g.length,ch:sum(g.map(r=>r[6])),mrr:sum(g.filter(r=>r[6]).map(r=>r[3])),g}});
+function rateChart(id,gs){$(id).innerHTML=gs.map(x=>`<div class="row"><div class="l">${x.l}</div><div><div class="track" role="img" aria-label="${x.l}: ${x.n?pct(x.ch/x.n):'no customers'}"><i class="c" style="width:${x.n?x.ch/x.n*100:0}%"></i></div><div class="val">${x.n?`${pct(x.ch/x.n)} churn · ${x.ch} of ${x.n}`:"no customers in filter"}</div></div></div>`).join("")}
+function stackChart(id,gs){const m=Math.max(1,...gs.map(x=>x.n));$(id).innerHTML=gs.map(x=>`<div class="row"><div class="l">${x.l}</div><div><div class="track" role="img" aria-label="${x.l}: ${x.n-x.ch} retained, ${x.ch} churned"><i class="r" style="width:${(x.n-x.ch)/m*100}%"></i><i class="c" style="width:${x.ch/m*100}%"></i></div><div class="val">${x.n-x.ch} retained · ${x.ch} churned</div></div></div>`).join("")}
+function revChart(id,gs){const m=Math.max(1,...gs.map(x=>x.mrr));$(id).innerHTML=gs.map(x=>`<div class="row"><div class="l">${x.l}</div><div><div class="track"><i class="c" style="width:${x.mrr/m*100}%"></i></div><div class="val">${inr(x.mrr)} lost per month · ${x.ch} churned</div></div></div>`).join("")}
+const hiLo=(gs,w)=>{const a=gs.filter(x=>x.n);if(!a.length)return"No data.";const s=[...a].sort((p,q)=>q.ch/q.n-p.ch/p.n),h=s[0],l=s[s.length-1];return h.ch/h.n===l.ch/l.n?`Churn is ${pct(h.ch/h.n)} in every ${w} shown.`:`Highest churn: ${h.l} at ${pct(h.ch/h.n)} (${h.ch} of ${h.n}). Lowest: ${l.l} at ${pct(l.ch/l.n)} (${l.ch} of ${l.n}).`};
+function render(){
+ const R=D.filter(r=>SEL.c.has(r[0])&&SEL.b.has(band(r[1]))&&SEL.p.has(r[5])),n=R.length,ch=R.filter(r=>r[6]),rt=R.filter(r=>!r[6]);
+ $("count").textContent=`Showing ${n} of ${D.length} customers`;
+ $("empty").style.display=n?"none":"block";
+ const mrrAll=sum(R.map(r=>r[3])),mrrCh=sum(ch.map(r=>r[3]));
+ const K=[["Customers",n,"in current filter"],["Churn rate",n?pct(ch.length/n):"–",`${ch.length} churned`],["Retention rate",n?pct(rt.length/n):"–",`${rt.length} retained`],["Monthly revenue at risk",inr(mrrCh),n?`${pct(mrrCh/mrrAll)} of ${inr(mrrAll)} monthly charges`:"–"],["Average tenure",n?avg(R.map(r=>r[1])).toFixed(1)+" mo":"–",`churned ${ch.length?avg(ch.map(r=>r[1])).toFixed(1):"–"} · retained ${rt.length?avg(rt.map(r=>r[1])).toFixed(1):"–"}`]];
+ $("kpis").innerHTML=K.map(k=>`<div class="kpi"><span>${k[0]}</span><strong>${k[1]}</strong><small>${k[2]}</small></div>`).join("");
+ const gc=grp(R,r=>r[0],OPT.c),gp=grp(R,r=>r[5],OPT.p),gb=grp(R,r=>band(r[1]),OPT.b),gt=grp(R,r=>String(r[4]),["0","1","2","3","4","5","6"]),gr=grp(R,r=>r[2],["Basic","Pro","Enterprise"]);
+ rateChart("ch-c",gc);rateChart("ch-p",gp);stackChart("ch-b",gb);stackChart("ch-t",gt.map(x=>({...x,l:x.l+(x.l==="1"?" ticket":" tickets")})));revChart("ch-r",gr);
+ $("in-c").textContent=hiLo(gc,"contract");
+ $("in-p").textContent=hiLo(gp,"payment method")+" Payment method overlaps with contract type, so treat it with care.";
+ const early=ch.filter(r=>r[1]<=12).length;
+ $("in-b").textContent=ch.length?`${early} of ${ch.length} churned customers left within their first 12 months.`:"No churned customers in this filter.";
+ $("in-t").textContent=ch.length&&rt.length?`Churned customers averaged ${avg(ch.map(r=>r[4])).toFixed(1)} tickets vs ${avg(rt.map(r=>r[4])).toFixed(1)} for retained. Tickets may signal dissatisfaction rather than cause churn.`:"Need both churned and retained customers to compare.";
+ const top=[...gr].sort((a,b)=>b.mrr-a.mrr)[0];
+ $("in-r").textContent=mrrCh&&top.mrr?`${top.l} accounts for ${pct(top.mrr/mrrCh)} of the revenue at risk (${inr(top.mrr)} per month).`:"No revenue at risk in this filter.";
+}
+render();
+</script></body></html>

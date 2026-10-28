@@ -1,0 +1,16 @@
+column,type,description,allowed_values_or_range,source
+customer_id,string,Unique synthetic customer ID (identifier only; never aggregate),CUST-#### (unique),raw (renamed)
+gender,string,Customer gender,Female / Male,raw (renamed)
+age,integer,Customer age in years,23-60 observed; validated 18-100,raw (renamed)
+tenure_months,integer,Completed months since signup,2-48 observed; >= 0,raw (renamed)
+subscription_type,string,Plan tier (fixed price per tier),Basic (49.99) / Pro (79.99) / Enterprise (149.99),raw (renamed)
+monthly_charges,float,Monthly charge (INR per EdVyro guide; file has no unit),49.99 / 79.99 / 149.99,raw (renamed)
+total_charges,float,Cumulative charges to date,= monthly_charges x tenure_months (validated),raw (renamed)
+contract_type,string,Contract length,Month-to-Month / One Year / Two Year,raw (renamed)
+support_tickets,integer,Support tickets raised (previous 90 days per EdVyro guide),0-6 observed; >= 0,raw (renamed)
+payment_method,string,Payment method,Credit Card / Debit Card / UPI / Bank Transfer,raw (renamed)
+churn,string,Whether the customer left in the observation period,Yes / No,raw (renamed)
+churn_flag,int8,Numeric churn indicator,1 = Yes / 0 = No,derived
+expected_total_charges,float,monthly_charges x tenure_months (validation helper),>= 0,derived
+charge_gap,float,total_charges minus expected_total_charges,0.00 for all rows,derived
+tenure_band,category,Grouped tenure,0-6 / 7-12 / 13-24 / 25+ months,derived
